@@ -1,12 +1,14 @@
 function buildMetadata(sample) {
     
-    d3.json(samples.json).then((data) => {
+    d3.json("samples.json").then((data) => {
 // get metadata info for demographic panel
       var metadata = data.metadata
 
-      console.log(metadata)
+      // console.log(metadata)
 // filter metadata info by id
-      var info = matadata.filter(info =>info.id.toString() === id )[0]
+      // 
+      var info = metadata.filter(meta => meta.id == sample)[0];
+      // var info = resultArray[0];
     
       var PANEL = d3.select("#sample-metadata") 
       // Filter the data for the object with the desired sample number
@@ -26,27 +28,24 @@ function buildMetadata(sample) {
   }
   
   function buildCharts(sample) {
-    d3.json("samples.json").then((plotdata) => {
-    //   var samples = data.samples;
-    //   var resultArray = samples.filter(sampleObj => sampleObj.id == sample);
-    //   var result = resultArray[0];
-  
-    //   var otu_ids = result.otu_ids;
-    //   var otu_labels = result.otu_labels;
-    //   var sample_values = result.sample_values;
+    d3.json("samples.json").then((data) => {
+  // deining the parameters for the bubble and bar charts
+      var samples = data.samples;
+      var info = samples.filter(meta => meta.id == sample)[0];
+      var otu_ids = info.otu_ids;
+      var labels = info.otu_labels;
+      var sample_values = info.sample_values;
+      var size = info.sample_values;
+      var color = info.otu_ids;         
+      var bar_sample = sample_values.slice(0, 10).reverse();
+      var bar_label = labels.slice(0, 10).reverse()
+      
 
     
-      var otu_ids = plotdata.otu_ids;
-      var sample_values = plotdata.sample_values;
-      var size = plotdata.sample_values;
-      var color = plotdata.otu_ids;
-      var labels = plotdata.otu_labels;
-  
-      // Build a Bubble Chart
+     
       var bubbleLayout = {
         title: "Bacteria Cultures/Sample",
-        margin: { t: 0 },
-        hovermode: "closest",
+        margin: { t: 0 },      
         xaxis: { title: "OTU ID" },
         margin: { t: 30}
       };
@@ -70,16 +69,17 @@ function buildMetadata(sample) {
       var trace1 = [
         {
           y: yticks,
-          x: sample_values.slice(0, 10).reverse(),
-          text: labels.slice(0, 10).reverse(),
+          x: bar_sample,
+          text: bar_label,
           type: "bar",
           orientation: "h",
         }
       ];
   
       var barLayout = {
-        title: "10 most common Bacteria Cultures in sample",
-        margin: { t: 30, l: 150 }
+        title: "Most common Bacteria Cultures in sample",
+        margin: { t: 50, l: 100,r: 100,b: 50 }
+        
       };
   
       Plotly.newPlot("bar", trace1, barLayout);
@@ -109,7 +109,7 @@ function buildMetadata(sample) {
   }
   
   function optionChanged(id) {
-    // Fetch new data each time a new sample is selected
+    // Fetch new data each time a new id is selected
     buildCharts(id);
     buildMetadata(id);
   }
